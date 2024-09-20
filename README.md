@@ -1,117 +1,115 @@
 # Resistance Network Solver
+When solving a network of resistors using a programming language, the first step is to select an appropriate data structure to represent the network. This process begins with understanding the network and its resistances. Visualizing the circuit diagram can greatly aid in comprehending the connections between resistors and other elements.
 
-This C++ program solves a network of resistors using the concept of parallel and series connections.
+Once the circuit is well-understood, the next consideration is how to effectively model this network in code. Choosing the right data structure is crucial for accurately representing the resistive network. Common approaches include using graphs or matrices, depending on the complexity of the network.
 
-When it comes to solve network of resistance using a programming language, the first thing that comes to your mind that which data-structure should be used to represent a network of resistors? When tackling the problem of solving a network of resistors using a programming language, the first step is to understand the network and its resistances. Drawing a circuit diagram helps visualize the connections between resistors and other elements. Once the circuit is visualized, the next consideration is how to represent it in a
-programming language. So, before jumping into the solution, try to think about which data structure should be used to represent the network of resistors.
+Before diving into the implementation, it’s important to reflect on the data structure that will best suit the representation of the resistor network. This careful planning will facilitate a more efficient and effective solution to calculating the total resistance of the circuit, much like you would do manually using Ohm’s Law.
 
-I assume that, you can can calculate total resistance of a circuit on a paper using ohm's law.
+## Intuition
+In this solution, the network of resistors is represented as a directed graph, where each node corresponds to a junction and the edges represent resistors. The direction of the edges indicates the flow of current. The weight of each edge stores the value of the resistor it represents.
 
-## Intution
-In this solution I am going to represent the network of resistors as a directed graph where node represents the junction and direction represent the flow of current.
-Representing a network of resistors as a directed graph involves structuring the graph to capture the flow of current through the circuit. In this representation, nodes signifies junctions or points in the circuit, where edges depict resistors connecting these nodes. Each edge in the directed graph has a direction to indicate the flow of current from one node to another. The value of the resistors stored as edge weight.
+To efficiently handle this structure in C++, an array of `multiset` is used to represent the graph. The choice of `multiset` allows for automatic sorting of elements, making computations for parallel connections more efficient by reducing time complexity.
 
-I use the an array of mutiset to represent the graph in C++. Now you might thinking why I want to use multiset. The reason is multiset stores all elemnts in sorted order. So that computation of parallel connection is done in cheaper time complexity.
-
-Consider the circuit given below.
+Consider the circuit shown below.
 
 ![Circuit Diagram](images/circuit_diagram.svg)
 
-To aid in understanding the relationships within the network, I provided a visual representation in the form of a network graph. The graph illustrates the connections and relationships between nodes within the network. The direction of the graph edges indicates the flow of electricity. I asseme there are V points starting from 0 to V - 1. I also assume that the electricity is go from 0 to V - 1. What I assume here is 0 is high voltage and V - 1 is low voltage.
+To help clarify the relationships within the network, I have provided a visual representation as a network graph. This graph demonstrates how nodes are interconnected and how these connections relate to each other. The direction of the edges in the graph indicates the flow of electricity. I assume there are V nodes, numbered from 0 to V — 1, with the current flowing from node 0 (high voltage) to node V — 1 (low voltage).
 
 ![Network Graph](images/network_graph.png)
 
 
-Now, also a question comes in, how to solve it? Which traversal should be used to solve the network of resistors. Try to think about it before scrolling down. if you founnd any solution then try to solve it by yourself. if you can't do the solution by yourself then scroll down to the intution.
 
-The intution is very simple. According to ohm's law what we solve this on a paper, the answer is try to  accumulate the resistances that are connected via series.
-Which means if there are n resistors connected via series the the total resistence of the series will bw R' where R' = R1 + R2 + ... +Rn.
+To address the problem of solving a network of resistors, an important question arises: which traversal method should be employed? Take a moment to consider this before continuing. If you find a potential solution, try solving it independently. If you’re unable to arrive at a solution on your own, you can scroll down for some guidance.
 
-When n resistences are connected in parallel then the total resistence will be R' where,
+The intuition behind solving the network is straightforward. Following Ohm’s Law, we can solve it as we would on paper. For resistors connected in series, the total resistance R’ is the sum of the individual resistances:
 
-1 / R' = 1 / R1 + 1/ R2 + ... + 1 / Rn.
+**1 / R' = 1 / R1 + 1/ R2 + ... + 1 / Rn.**
 
+For resistors connected in parallel, the total resistance R’ is given by:
+So, **R' = 1 / (1 / R1 + 1 / R2 + ... + 1 / Rn)**
 
-So, R' = 1 / (1 / R1 + 1 / R2 + ... + 1 / Rn)
+Here’s a step-by-step illustration of how to solve it manually.
 
-here is the step by step illustration how we solve it on a paper.
 
 ![Step 1](images/illustration1.png)
 
 
-Since 4 till 6 their are series of connection we just acuumulate resistances placed in betweed 4 and 5, 5 and 6. which means 10 + 10 = 20.
+**Step-1:** Between nodes 4 and 6, there are series connections. We simply add the resistances between 4 and 5, and 5 and 6, resulting in a total resistance of 20 ohms (10 + 10).
 
-
-
+<br/><br/>
 
 ![Step 2](images/illustration2.png)
 
-
-In the previous step we see an parllel connection between 4 and 6. It this step we just calculate the total resistence from from 4 to 6 using the parallel connection formula.
-
+**Step-2:** In the previous step, we identified a parallel connection between nodes 4 and 6. In this step, we calculate the total resistance between nodes 4 and 6 using the parallel connection formula.
+<br/><br/>
 
 ![Step 3](images/illustration3.png)
 
 
-In this step we just do the same thing as we do in the first step. But now we do for node 4, 6 and 7.
+
+**Step-3:** In this step, we apply the same process as in the first step, but now for nodes 4, 6, and 7.
+<br/><br/>
 
 ![Step 4](images/illustration4.png)
 
 
-In this step we just do the same thing as we do in the second step. But now we do for node 4 and 7.
 
-
-Similarly we do the below steps.
+**Step-4**: In this step, we use the same approach as in the second step, but now for nodes 4 and 7.
+<br/><br/>
 
 ![Step 5](images/illustration5.png)
 
+
+**Step-5:** Between nodes 3, 4 and 7, there are series connections. In this step, we perform a series addition for nodes 3, 4, and 7.
+<br/><br/>
 
 
 ![Step 6](images/illustration6.png)
 
 
+**Step-6:** Similar to step 2, we perform a parallel addition between nodes 3 and 7.
+<br/><br/>
+
 
 ![Step 7](images/illustration7.png)
 
+
+**Step-7:** Similar to step 1, we have a series connection between nodes 3, 7, and 8. We simply calculate the total resistance by adding them together.
+<br/><br/>
 
 
 ![Step 8](images/illustration8.png)
 
 
+**Step-8:** Similar to step 2, we have a parallel connection between nodes 3 and 8. We calculate the total resistance using the parallel connection formula.
+<br/><br/>
 
-![Step 9](images/illustration9.png)
-
-
-
-![Step 10](images/illustration10.png)
+![Step 9](images/illustration11.png)
 
 
+**Step-9:** Similar to step 1, we have a series connection between nodes 0, 1, 2, 3 and 8. We calculate the total resistance by summing them up.
+<br/><br/>
 
-![Step 11](images/illustration11.png)
+Yes, in this step, the current flows directly from the low voltage to the high voltage. The resistance between junctions 0 and 8 is 20 ohm, as we consistently apply Ohm’s law throughout the process.
 
-Yes, in this step we see electricity go directly from low voltage to high volatage, and the resistence between junction 0 and 8 is 20 ohm. because in every step we follow the ohm's law.
+In the previous steps, we demonstrated how to logically solve the resistance of a network using pen and paper. This logical approach can be implemented in any programming language to create an algorithm for solving network resistances.
 
+If you understand how to solve it, try implementing it yourself in any programming language you’re familiar with.
 
-Now if you understand that how we solve it, then try to implement it by yourself in any programming language that you know.
+In my approach, I use Depth First Search (DFS) on the graph and perform two main actions based on specific conditions:
 
-I just try to do a DFS (Depth First Search) on the graph. during traversal I just do two things based on some conditions.
+**1. Node Simplification:** During DFS traversal, I check if each adjacent node of the current node has an in-degree and out-degree of 1. When this condition is met, indicating a series connection, I simplify the graph by removing the adjacent node and directly connecting the current node to the node that the adjacent node was originally connected to.
 
-First of all, I check for adjacent nodes of a given node in the dfs function and look for those node who have a indegree and outdegree 1. if the condition yields true then, I just try to remove the adjacent node connect the current node to the node which is connected through the adjacent node.
+*Why do this?* The logic is straightforward: When a node has both an in-degree and out-degree of 1, it effectively acts as a connector between two other nodes. In such cases, we can combine the resistances of the adjacent node’s neighboring nodes and remove the adjacent node from the graph. This is similar to how we simplify circuits on paper. If you’re still unsure, try working through more examples to understand this better.
 
-You might be wondering why we do that. What is the logic behind it? The logic is very simple. When I'm at a node with an indegree and outdegree of 1, do I need to include the node in the graph? I can easily add the resistence of the adjacent node's adjacent node and remove the the adjacent node. When we solve a circuit on a paper we do that. If you still have confusion then try to write more examples and think about it.
+**2. Handling Non-Simplifiable Nodes:** If the adjacent node does not have an in-degree and out-degree of 1, the next step is to call DFS recursively for that adjacent node. This ensures that we explore all possible simplifications in the graph.
 
-But what should I do when the adjacent node doen't have the indegeree and outdegree 1. Before scrolling down try to build a logic by yourself to handle this situation.
-
-If you think that we should call the dfs for the adjacent node then you are correct.
-
-
-But do you think that when we should calculate the total resistence of parallel connections. we should do that after doing all operations of a node or you can say before going from dfs call.
-
+*When to Calculate Total Resistance:* You might wonder whether we should calculate the total resistance of parallel connections after completing all operations on a node or before returning from a DFS call. It’s generally best to calculate the total resistance of parallel connections after processing all operations for a node, before moving on to the next DFS call. This ensures that all possible simplifications have been made before computing the resistance.
 
 ## Algorithm Explanation:
 
-I implement this algorithm in C++ programming language, however you can implement it in any programming language. I just explain my C++ code. It's a very high level explaination.
-
+I’ve implemented this algorithm in C++, but it can be adapted to any programming language.
 
 ### Main Components:
 
